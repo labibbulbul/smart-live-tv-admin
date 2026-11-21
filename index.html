@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Smart Live TV — Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark">▶</div><div><strong>SMART LIVE TV</strong><small>ADMIN CONTROL CENTER</small></div></div>
+      <button id="logoutBtn" class="button secondary hidden">Sign out</button>
+    </header>
+
+    <section id="loginView" class="login-wrap">
+      <div class="login-card">
+        <div class="eyebrow">ADMIN ACCESS</div>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to manage your Smart Live TV channels.</p>
+        <form id="loginForm">
+          <label>Email address<input id="email" type="email" autocomplete="username" required placeholder="admin@example.com"></label>
+          <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+          <button class="button primary full" type="submit">Sign in</button>
+        </form>
+        <p id="loginMessage" class="message" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="appView" class="hidden">
+      <div class="welcome-row">
+        <div><div class="eyebrow">OVERVIEW</div><h1>Channel management</h1><p class="muted">Manage the channel catalogue connected to your Android app.</p></div>
+        <div class="user-pill" id="userEmail"></div>
+      </div>
+      <div id="notice" class="notice hidden" role="status"></div>
+      <div class="stats">
+        <div class="stat"><span>Total channels</span><strong id="totalChannels">0</strong></div>
+        <div class="stat"><span>Active channels</span><strong id="activeChannels">0</strong></div>
+        <div class="stat"><span>Countries</span><strong id="totalCountries">0</strong></div>
+        <div class="stat"><span>Categories</span><strong id="totalCategories">0</strong></div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="channels">Channels</button>
+        <button class="tab" data-tab="countries">Countries</button>
+        <button class="tab" data-tab="categories">Categories</button>
+      </nav>
+
+      <section id="channelsPanel" class="panel">
+        <div class="panel-head"><div><h2>Channels</h2><p class="muted">Add or update channel information and stream URLs.</p></div><button id="addChannelBtn" class="button primary">＋ Add channel</button></div>
+        <div class="toolbar"><input id="channelSearch" type="search" placeholder="Search channels…"><select id="statusFilter"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>Channel</th><th>Country</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody id="channelRows"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody></table></div>
+      </section>
+
+      <section id="countriesPanel" class="panel hidden">
+        <div class="panel-head"><div><h2>Countries</h2><p class="muted">Countries available in the channel catalogue.</p></div></div>
+        <form id="countryForm" class="inline-form"><input id="countryName" required placeholder="Country name (e.g. Bangladesh)"><input id="countryCode" maxlength="3" placeholder="Code (BD)"><input id="countryFlag" maxlength="8" placeholder="Flag 🇧🇩"><button class="button primary">Add country</button></form>
+        <div id="countryList" class="simple-list"></div>
+      </section>
+
+      <section id="categoriesPanel" class="panel hidden">
+        <div class="panel-head"><div><h2>Categories</h2><p class="muted">Group channels by content type.</p></div></div>
+        <form id="categoryForm" class="inline-form"><input id="categoryName" required placeholder="Category (e.g. News)"><button class="button primary">Add category</button></form>
+        <div id="categoryList" class="simple-list"></div>
+      </section>
+    </section>
+    <footer>Smart Live TV · Admin Panel · Free hosting compatible</footer>
+  </main>
+
+  <dialog id="channelDialog">
+    <form id="channelForm" method="dialog" class="dialog-card">
+      <div class="panel-head"><div><div class="eyebrow">CHANNEL DETAILS</div><h2 id="dialogTitle">Add channel</h2></div><button type="button" id="closeDialog" class="icon-button" aria-label="Close">×</button></div>
+      <input id="channelId" type="hidden">
+      <label>Channel name *<input id="chName" required maxlength="120" placeholder="e.g. Bangladesh Television"></label>
+      <label>Stream URL *<input id="chStream" type="url" required placeholder="https://…"></label>
+      <label>Logo URL<input id="chLogo" type="url" placeholder="https://…/logo.png"></label>
+      <div class="form-grid">
+        <label>Country<select id="chCountry"><option value="">Select country</option></select></label>
+        <label>Category<select id="chCategory"><option value="">Select category</option></select></label>
+        <label>Language<input id="chLanguage" placeholder="Bangla, Hindi, English…"></label>
+        <label>Quality<input id="chQuality" placeholder="HD, SD, 1080p…"></label>
+      </div>
+      <label>Description<textarea id="chDescription" rows="2" placeholder="Optional channel description"></textarea></label>
+      <div class="check-row"><label><input id="chActive" type="checkbox" checked> Active</label><label><input id="chFeatured" type="checkbox"> Featured</label></div>
+      <label>Sort order<input id="chSort" type="number" value="0"></label>
+      <p class="muted tiny">Only add streams you own or are authorized to distribute. A URL may still fail because of DRM, geo-blocking, or device compatibility.</p>
+      <div class="dialog-actions"><button type="button" id="cancelDialog" class="button secondary">Cancel</button><button type="submit" class="button primary">Save channel</button></div>
+      <p id="formMessage" class="message"></p>
+    </form>
+  </dialog>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
