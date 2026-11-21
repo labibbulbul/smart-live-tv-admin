@@ -50,7 +50,7 @@
       <section id="channelsPanel" class="panel">
         <div class="panel-head"><div><h2>Channels</h2><p class="muted">Add or update channel information and stream URLs.</p></div><button id="addChannelBtn" class="button primary">＋ Add channel</button></div>
         <div class="toolbar"><input id="channelSearch" type="search" placeholder="Search channels…"><select id="statusFilter"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-        <div class="table-wrap"><table><thead><tr><th>Channel</th><th>Country</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody id="channelRows"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Channel</th><th>Country</th><th>Category</th><th>Playback</th><th>Status</th><th>Actions</th></tr></thead><tbody id="channelRows"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table></div>
       </section>
 
       <section id="countriesPanel" class="panel hidden">
@@ -73,7 +73,16 @@
       <div class="panel-head"><div><div class="eyebrow">CHANNEL DETAILS</div><h2 id="dialogTitle">Add channel</h2></div><button type="button" id="closeDialog" class="icon-button" aria-label="Close">×</button></div>
       <input id="channelId" type="hidden">
       <label>Channel name *<input id="chName" required maxlength="120" placeholder="e.g. Bangladesh Television"></label>
-      <label>Stream URL *<input id="chStream" type="url" required placeholder="https://…"></label>
+      <label>Playback Type
+        <select id="chPlaybackType" required>
+          <option value="hls">Native HLS (.m3u8)</option>
+          <option value="dash">Native DASH (.mpd)</option>
+          <option value="youtube">YouTube Player</option>
+          <option value="web">Official Web Player / Website</option>
+        </select>
+      </label>
+      <label id="urlLabel">Stream URL *<input id="chStream" type="url" required placeholder="https://example.com/live/index.m3u8"></label>
+      <p id="playbackHelp" class="muted tiny">Use a direct, authorized HLS .m3u8 stream URL.</p>
       <label>Logo URL<input id="chLogo" type="url" placeholder="https://…/logo.png"></label>
       <div class="form-grid">
         <label>Country<select id="chCountry"><option value="">Select country</option></select></label>

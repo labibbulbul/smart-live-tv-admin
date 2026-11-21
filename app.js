@@ -47,9 +47,10 @@
     $("channelRows").innerHTML=list.length?list.map(c=>`<tr>
       <td><div class="channel-name">${c.logo_url?`<img src="${escapeHtml(c.logo_url)}" alt="" onerror="this.style.display='none'">`:""}<span>${escapeHtml(c.name)}</span></div></td>
       <td>${escapeHtml(c.countries?.name||"—")}</td><td>${escapeHtml(c.categories?.name||"—")}</td>
+      <td>${escapeHtml(({hls:"HLS",dash:"DASH",youtube:"YouTube",web:"Web Player"})[c.playback_type]||c.playback_type||"HLS")}</td>
       <td><span class="status ${c.is_active?"":"off"}">${c.is_active?"Active":"Inactive"}</span></td>
       <td><div class="actions"><button class="small-btn" data-edit="${c.id}">Edit</button><button class="small-btn danger" data-delete="${c.id}">Delete</button></div></td>
-    </tr>`).join(""):'<tr><td colspan="5" class="empty">No channels found.</td></tr>';
+    </tr>`).join(""):'<tr><td colspan="6" class="empty">No channels found.</td></tr>';
     $("channelRows").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>editChannel(b.dataset.edit)));
     $("channelRows").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteChannel(b.dataset.delete)));
   }
@@ -65,9 +66,23 @@
     $("chCountry").innerHTML='<option value="">Select country</option>'+countries.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
     $("chCategory").innerHTML='<option value="">Select category</option>'+categories.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
   }
+  function updatePlaybackHelp(){
+    const type=$("chPlaybackType").value;
+    const configs={
+      hls:{label:"Stream URL *",placeholder:"https://example.com/live/index.m3u8",help:"Use a direct, authorized HLS .m3u8 stream URL."},
+      dash:{label:"Stream URL *",placeholder:"https://example.com/live/manifest.mpd",help:"Use a direct, authorized DASH .mpd stream URL."},
+      youtube:{label:"YouTube URL *",placeholder:"https://www.youtube.com/watch?v=…",help:"Paste a public YouTube video or live URL. The Android app must use an authorized YouTube Player; this is not a direct Media3 stream."},
+      web:{label:"Official Website / Player URL *",placeholder:"https://official-channel.example/live",help:"Paste the channel's official webpage/player URL. The Android app will need a WebView-style player; playback may vary by website."}
+    };
+    const c=configs[type]||configs.hls;
+    $("urlLabel").firstChild.textContent=c.label;
+    $("chStream").placeholder=c.placeholder;
+    $("playbackHelp").textContent=c.help;
+  }
   function openDialog(c=null){
     $("channelForm").reset(); $("channelId").value=c?.id||""; $("dialogTitle").textContent=c?"Edit channel":"Add channel"; $("formMessage").textContent="";
     $("chName").value=c?.name||"";$("chStream").value=c?.stream_url||"";$("chLogo").value=c?.logo_url||"";
+    $("chPlaybackType").value=c?.playback_type||"hls"; updatePlaybackHelp();
     $("chCountry").value=c?.country_id||"";$("chCategory").value=c?.category_id||"";
     $("chLanguage").value=c?.language||"";$("chQuality").value=c?.quality||"";
     $("chDescription").value=c?.description||"";$("chActive").checked=c?!!c.is_active:true;
@@ -91,12 +106,14 @@
   });
   $("logoutBtn").addEventListener("click",async()=>{if(supabase)await supabase.auth.signOut();});
   $("addChannelBtn").addEventListener("click",()=>openDialog());
+  $("chPlaybackType").addEventListener("change",updatePlaybackHelp);
   $("closeDialog").addEventListener("click",()=>$("channelDialog").close());
   $("cancelDialog").addEventListener("click",()=>$("channelDialog").close());
   $("channelForm").addEventListener("submit",async e=>{
     e.preventDefault();$("formMessage").textContent="Saving…";
     const id=$("channelId").value;
-    const row={name:$("chName").value.trim(),stream_url:$("chStream").value.trim(),logo_url:$("chLogo").value.trim()||null,
+    const row={name:$("chName").value.trim(),stream_url:$("chStream").value.trim(),
+      playback_type:$("chPlaybackType").value,logo_url:$("chLogo").value.trim()||null,
       country_id:$("chCountry").value||null,category_id:$("chCategory").value||null,language:$("chLanguage").value.trim()||null,
       quality:$("chQuality").value.trim()||null,description:$("chDescription").value.trim()||null,
       is_active:$("chActive").checked,is_featured:$("chFeatured").checked,sort_order:Number($("chSort").value)||0,updated_at:new Date().toISOString()};

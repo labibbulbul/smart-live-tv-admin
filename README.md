@@ -32,3 +32,15 @@ Use the email and password of the Supabase Auth user that you added to `public.a
 `countries`, `categories`, `channels`, `app_admins`.
 
 This is an initial admin panel. It does not host video streams; it stores channel metadata and authorized stream URLs.
+
+
+## Playback type update
+The channel form stores one of four playback types in `channels.playback_type`:
+- `hls` — direct HLS `.m3u8` URL
+- `dash` — direct DASH `.mpd` URL
+- `youtube` — public YouTube video/live URL for an authorized YouTube Player
+- `web` — official website/player URL for a WebView-style player
+
+Before deploying, run `SmartLiveTV_PlaybackType_Supabase.sql` once in Supabase SQL Editor. Existing channels are preserved and default to `hls`.
+
+This updates only the Admin Panel and database metadata. The Android app still needs corresponding player logic for YouTube and Web Player types. A YouTube watch URL is not a direct HLS/DASH stream.
